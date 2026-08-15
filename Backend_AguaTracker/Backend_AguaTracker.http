@@ -1,0 +1,6 @@
+@Backend_AguaTracker_HostAddress = http://localhost:5231
+
+GET {{Backend_AguaTracker_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

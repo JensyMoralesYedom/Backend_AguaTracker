@@ -1,0 +1,31 @@
+# --- Visual Studio y configuraciones locales ---
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# --- Compilación y Resultados (¡Lo más pesado y lo que da errores a otros!) ---
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+[Tt]emp/
+
+# --- Configuración local de usuarios / Secretos ---
+appsettings.Development.json
+appsettings.Local.json
+*.pem
+
+# --- Sistema operativo ---
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
