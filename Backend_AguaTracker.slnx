@@ -1,3 +1,5 @@
 <Solution>
+  <Project Path="Backend_AguaTracker.Domain/Backend_AguaTracker.Domain.csproj" Id="162616dd-1553-42fc-bc03-38a4bb2b603f" />
+  <Project Path="Backend_AguaTracker.Repository/Backend_AguaTracker.Repository.csproj" Id="a56bef87-329a-422e-9659-bf0cda57c93c" />
   <Project Path="Backend_AguaTracker/Backend_AguaTracker.csproj" />
 </Solution>

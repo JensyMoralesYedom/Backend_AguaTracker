@@ -18,6 +18,6 @@ namespace Backend_AguaTracker.Repository
         }
 
         public DbSet<Backend_AguaTracker.Domain.User> Users { get; set; }
-        public DbSet<Backend_AguaTracker.Domain.Consumption> Consumptions { get; set; }
+        public DbSet<Backend_AguaTracker.Domain.WaterIntake> Consumptions { get; set; }
     }
 }
