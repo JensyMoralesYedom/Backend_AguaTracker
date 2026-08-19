@@ -5,21 +5,18 @@ using System.Text;
 
 namespace Backend_AguaTracker.Domain
 {
-    public class Consumption
+    public class WaterIntake
     {
         [Required]
         public int Id { get; set; }
-        
+
         [Required]
-        public int UserId { get; set; }
-        
-        [Required]
-        public DateTime Date { get; set; }
-        
+        public int dailyResumenId { get; set; } = 0;
+
         [Required] 
         public double Amount { get; set; }
-        
-        // Navigation property
-        public User User { get; set; }
+
+        // navigation property to the DailyResumen entity
+        public DailyResume DailyResumen { get; set; }
     }
 }

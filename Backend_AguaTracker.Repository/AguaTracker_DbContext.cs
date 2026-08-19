@@ -15,9 +15,10 @@ namespace Backend_AguaTracker.Repository
         {
             base.OnModelCreating(modelBuilder);
             // Configure your entity mappings here
+
         }
 
-        public DbSet<Backend_AguaTracker.Domain.User> Users { get; set; }
-        public DbSet<Backend_AguaTracker.Domain.WaterIntake> Consumptions { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<WaterIntake> WaterIntakes { get; set; }
     }
 }

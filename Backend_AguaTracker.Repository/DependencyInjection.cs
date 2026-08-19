@@ -4,6 +4,9 @@ using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Backend_AguaTracker.Domain;
+using Backend_AguaTracker.Repository.Interfaces;
+using Backend_AguaTracker.Repository.RepositoriesClasses;
 
 namespace Backend_AguaTracker.Repository
 {
@@ -16,6 +19,11 @@ namespace Backend_AguaTracker.Repository
             var connectionString = configuration.GetConnectionString("DefaultConnection");
             services.AddDbContext<AguaTracker_DbContext>(options =>
                 options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IWaterIntakeRepository, WaterIntakeRepository>();
+            services.AddScoped<IDailyResumenRepository, DailyResumenRepository>();
+
             return services;
         }
     }
