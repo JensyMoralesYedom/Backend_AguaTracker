@@ -1,12 +1,13 @@
 ﻿using Backend_AguaTracker.Domain;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Threading.Tasks;
 using Backend_AguaTracker.Repository.Interfaces;
+using Backend_AguaTracker.Service.Interfaces;
 
 namespace Backend_AguaTracker.Service.Services
 {
-    public class DailyResumeService
+    public class DailyResumeService : IDailyResumeService
     {
         private readonly IDailyResumenRepository _dailyResumenRepository;
         private readonly IUserRepository _userRepository;
@@ -17,52 +18,85 @@ namespace Backend_AguaTracker.Service.Services
             _userRepository = userRepository;
         }
 
-        public async Task<DailyResume> GetDailyResumenByDateAsync(DateTime date)
+        public async Task<Result<DailyResume>> GetDailyResumenByDateAsync(DateTime date)
         {
-            return await _dailyResumenRepository.GetDailyResumenByDateAsync(date);
+            var result = await _dailyResumenRepository.GetDailyResumenByDateAsync(date);
+            if (!result.IsSuccess)
+            {
+                return Result<DailyResume>.Failure(result.Error);
+            }
+            return result;
         }
 
-        public async Task<DailyResume> GetDailyResumenByUserIdAndDateAsync(int userId, DateTime date)
+        public async Task<Result<DailyResume>> GetDailyResumenByUserIdAndDateAsync(int userId, DateTime date)
         {
-            return await _dailyResumenRepository.GetDailyResumenByUserIdAndDateAsync(userId, date);
+            var result = await _dailyResumenRepository.GetDailyResumenByUserIdAndDateAsync(userId, date);
+            if (!result.IsSuccess)
+            {
+                return Result<DailyResume>.Failure(result.Error);
+            }
+            return result;
         }
 
-        public async Task<List<DailyResume>> GetDailyResumenByUserIdAsync(int userId)
+        public async Task<Result<List<DailyResume>>> GetDailyResumenByUserIdAsync(int userId)
         {
-            return await _dailyResumenRepository.GetDailyResumenByUserIdAsync(userId);
+            var result = await _dailyResumenRepository.GetDailyResumenByUserIdAsync(userId);
+            return result;
         }
 
-        public async Task<List<DailyResume>> GetAllDailyResumenAsync()
+        public async Task<Result<List<DailyResume>>> GetAllDailyResumenAsync()
         {
-            return await _dailyResumenRepository.GetAllDailyResumenAsync();
+            var result = await _dailyResumenRepository.GetAllDailyResumenAsync();
+            return result;
         }
 
-        public async Task<DailyResume> GetDailyResumenByIdAsync(int id)
+        public async Task<Result<DailyResume>> GetDailyResumenByIdAsync(int id)
         {
-            return await _dailyResumenRepository.GetDailyResumenByIdAsync(id);
+            var result = await _dailyResumenRepository.GetDailyResumenByIdAsync(id);
+            if (!result.IsSuccess)
+            {
+                return Result<DailyResume>.Failure(result.Error);
+            }
+            return result;
         }
 
-        public async Task DeleteDailyResumenAsync(DailyResume dailyResumen)
+        public async Task<Result<bool>> DeleteDailyResumenAsync(DailyResume dailyResumen)
         {
+            if (dailyResumen == null)
+            {
+                return Result<bool>.Failure("El registro a eliminar no puede ser nulo.");
+            }
+
             await _dailyResumenRepository.DeleteDailyResumenAsync(dailyResumen);
+            return Result<bool>.Success(true);
         }
 
-        public async Task UpdateDailyResumenAsync(DailyResume dailyResumen)
+        public async Task<Result<bool>> UpdateDailyResumenAsync(DailyResume dailyResumen)
         {
+            if (dailyResumen == null)
+            {
+                return Result<bool>.Failure("El registro a actualizar no puede ser nulo.");
+            }
+
             await _dailyResumenRepository.UpdateDailyResumenAsync(dailyResumen);
+            return Result<bool>.Success(true);
         }
 
         public async Task<Result<DailyResume>> AddDailyResumenAsync(int userId, DateTime date, int intaketotal, ActivityLevelEnum? activity)
         {
-            var user = await _userRepository.GetUserByIdAsync(userId);
+            var result = await _userRepository.GetUserByIdAsync(userId);
+            var user = result.IsSuccess ? result.Value : null;
 
-            if (user == null) {
-               return Result<DailyResume>.Failure("el usuario no existe");
+            if (user == null)
+            {
+                return Result<DailyResume>.Failure("El usuario no existe.");
             }
 
+            // Lógica de fallback aplicada correctamente
             ActivityLevelEnum activityLevel = activity ?? user.DefaultActivityLevel;
 
             int intakeGoal = CalculateIntakeGoal((int)user.Weight, activityLevel);
+
             var dailyResumen = new DailyResume
             {
                 UserId = userId,
@@ -71,6 +105,7 @@ namespace Backend_AguaTracker.Service.Services
                 IntakeGoal = intakeGoal,
                 ActivityLevel = activityLevel
             };
+
             await _dailyResumenRepository.AddDailyResumenAsync(dailyResumen);
 
             return Result<DailyResume>.Success(dailyResumen);

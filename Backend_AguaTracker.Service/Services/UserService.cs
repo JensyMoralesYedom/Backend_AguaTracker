@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Backend_AguaTracker.Domain;
 using Backend_AguaTracker.Repository.Interfaces;
+using Backend_AguaTracker.Service.Interfaces;
 
 namespace Backend_AguaTracker.Service.Services
 {
-    public class UserService
+    public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
 
@@ -17,13 +18,13 @@ namespace Backend_AguaTracker.Service.Services
 
         public async Task<Result<User>> GetUserByIdAsync(int id)
         {
-            var user = await _userRepository.GetUserByIdAsync(id);
-            if (user == null)
+            var result = await _userRepository.GetUserByIdAsync(id);
+            if (!result.IsSuccess)
             {
-                return Result<User>.Failure($"Usuario con ID {id} no encontrado.");
+                return Result<User>.Failure(result.Error);
             }
 
-            return Result<User>.Success(user);
+            return Result<User>.Success(result.Value);
         }
 
         public async Task<Result<User>> GetUserByEmailAsync(string email)
@@ -33,19 +34,24 @@ namespace Backend_AguaTracker.Service.Services
                 return Result<User>.Failure("El correo electrónico no puede estar vacío.");
             }
 
-            var user = await _userRepository.GetUserByEmailAsync(email);
-            if (user == null)
+            var result = await _userRepository.GetUserByEmailAsync(email);
+            if (!result.IsSuccess)
             {
-                return Result<User>.Failure($"No existe ningún usuario registrado con el correo {email}.");
+                return Result<User>.Failure(result.Error);
             }
 
-            return Result<User>.Success(user);
+            return Result<User>.Success(result.Value);
         }
 
         public async Task<Result<List<User>>> GetAllUsersAsync()
         {
-            var users = await _userRepository.GetAllUsersAsync();
-            return Result<List<User>>.Success(users);
+            var result = await _userRepository.GetAllUsersAsync();
+            if (!result.IsSuccess)
+            {
+                return Result<List<User>>.Failure(result.Error);
+            }
+
+            return Result<List<User>>.Success(result.Value);
         }
 
         public async Task<Result<User>> AddUserAsync(User user)

@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace Backend_AguaTracker.Controllers
+namespace Backend_AguaTracker.Api.Controllers
 {
     [ApiController]
     [Route("[controller]")]

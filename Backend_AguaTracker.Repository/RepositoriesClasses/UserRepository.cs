@@ -15,37 +15,43 @@ namespace Backend_AguaTracker.Repository.RepositoriesClasses
             _context = context;
         }
 
-        public async Task<User> GetUserByIdAsync(int id)
+        public async Task<Result<User>> GetUserByIdAsync(int id)
         {
-            return await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == id);
+            return user != null ? Result<User>.Success(user) : Result<User>.Failure("El usuario no existe.");
         }
 
-        public async Task<User> GetUserByEmailAsync(string email)
+        public async Task<Result<User>> GetUserByEmailAsync(string email)
         {
-            return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            return user != null ? Result<User>.Success(user) : Result<User>.Failure("El usuario no existe.");
         }
 
-        public async Task AddUserAsync(User user)
+        public async Task<Result<bool>> AddUserAsync(User user)
         {
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
+            return Result<bool>.Success(true);
         }
 
-        public async Task UpdateUserAsync(User user)
+        public async Task<Result<bool>> UpdateUserAsync(User user)
         {
             _context.Users.Update(user);
             await _context.SaveChangesAsync();
+            return Result<bool>.Success(true);
         }
 
-        public async Task DeleteUserAsync(User user)
+        public async Task<Result<bool>> DeleteUserAsync(User user)
         {
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();
+            return Result<bool>.Success(true);
         }
 
-        public async Task<List<User>> GetAllUsersAsync()
+        public async Task<Result<List<User>>> GetAllUsersAsync()
         {
-            return await _context.Users.ToListAsync();
+            var users = await _context.Users.ToListAsync();
+            return Result<List<User>>.Success(users);
         }
 
     }

@@ -16,39 +16,51 @@ namespace Backend_AguaTracker.Repository.RepositoriesClasses
             _context = context;
         }
 
-        public async Task AddWaterIntakeAsync(WaterIntake waterIntake)
+        public async Task<Result<bool>> AddWaterIntakeAsync(WaterIntake waterIntake)
         {
             _context.WaterIntakes.Add(waterIntake);
             await _context.SaveChangesAsync();
+            return Result<bool>.Success(true);
         }
 
-        public async Task<List<WaterIntake>> GetWaterIntakesByUserIdAsync(int userId)
+        public async Task<Result<List<WaterIntake>>> GetWaterIntakesByUserIdAsync(int userId)
         {
-            return await _context.WaterIntakes
-                .Where(wi => wi.UserId == userId)
+            var waterIntakes = await _context.WaterIntakes
+                .AsNoTracking()
+                .Include(wi => wi.DailyResumen)
+                .Where(wi => wi.DailyResumen.UserId == userId)
                 .ToListAsync();
+            return Result<List<WaterIntake>>.Success(waterIntakes);
         }
 
-        public async Task<WaterIntake> GetWaterIntakeByIdAsync(int id)
+        public async Task<Result<WaterIntake>> GetWaterIntakeByIdAsync(int id)
         {
-            return await _context.WaterIntakes.FirstOrDefaultAsync(wi => wi.Id == id);
+            var waterIntake = await _context.WaterIntakes.FirstOrDefaultAsync(wi => wi.Id == id);
+            if (waterIntake == null)
+            {
+                return Result<WaterIntake>.Failure($"Ingesta de agua con ID {id} no encontrada.");
+            }
+            return Result<WaterIntake>.Success(waterIntake);
         }
 
-        public async Task UpdateWaterIntakeAsync(WaterIntake waterIntake)
+        public async Task<Result<bool>> UpdateWaterIntakeAsync(WaterIntake waterIntake)
         {
             _context.WaterIntakes.Update(waterIntake);
             await _context.SaveChangesAsync();
+            return Result<bool>.Success(true);
         }
 
-        public async Task DeleteWaterIntakeAsync(WaterIntake waterIntake)
+        public async Task<Result<bool>> DeleteWaterIntakeAsync(WaterIntake waterIntake)
         {
             _context.WaterIntakes.Remove(waterIntake);
             await _context.SaveChangesAsync();
+            return Result<bool>.Success(true);
         }
 
-        public async Task<List<WaterIntake>> GetAllWaterIntakesAsync()
+        public async Task<Result<List<WaterIntake>>> GetAllWaterIntakesAsync()
         {
-            return await _context.WaterIntakes.ToListAsync();
+            var waterIntakes = await _context.WaterIntakes.ToListAsync();
+            return Result<List<WaterIntake>>.Success(waterIntakes);
         }
     }
 }

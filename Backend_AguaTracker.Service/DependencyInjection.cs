@@ -10,6 +10,9 @@ namespace Backend_AguaTracker.Service
             // Register your service layer services here
             // For example, if you have a service class:
             // services.AddScoped<IYourService, YourServiceImplementation>();
+
+            
+
             return services;
         }
     }

@@ -11,7 +11,7 @@ API RESTful desarrollada en .NET enfocada en la gestión personalizada y cálcul
 
 ## 🚀 Características Principales
 
-- **Cálculo Fisiológico de Meta Diaria:** Algoritmo que calcula la meta recomendada de agua (en ml) según el peso, y nivel de actividad física del usuario.
+- **Cálculo Fisiológico de Meta Diaria:** Algoritmo que calcula la meta recomendada de agua (en ml) según el peso, altura y nivel de actividad física del usuario.
 - **Autenticación y Autorización Segura:** Implementación de tokens **JWT (JSON Web Tokens)** mediante middlewares de autorización para proteger endpoints privados.
 - **Inyección de Dependencias Desacoplada:** Registro encapsulado de servicios y contexto de base de datos mediante *Extension Methods* para un `Program.cs` limpio.
 - **Gestión de Consumo e Historial:** Registro diario de ingesta de agua con agregación de datos para la consulta de progreso en tiempo real.
@@ -44,5 +44,28 @@ El sistema está estructurado bajo una **Arquitectura en Capas** que separa clar
 
 1. **Clonar el repositorio:**
    ```bash
-   git clone https://github.com/JensyMoralesYedom/Backend_AguaTracker.git
+   git clone [https://github.com/JensyMoralesYedom/Backend_AguaTracker.git](https://github.com/JensyMoralesYedom/Backend_AguaTracker.git)
+   ```
    
+ * Configurar la Cadena de Conexión:
+   Asegúrate de configurar tu string de conexión en el archivo appsettings.json de la capa Web API:
+```JSON
+	"ConnectionStrings": {
+  "DefaultConnection": "Server=localhost;Database=AguaTrackerDb;User=tu_usuario;Password=tu_clave;"
+}
+```
+   
+ * Aplicar las Migraciones:
+```bash
+dotnet ef database update --project Backend_AguaTracker.Repository --startup-project Backend_AguaTracker.API 
+```
+
+ * Ejecutar la API:
+```bash
+   dotnet run --project Backend_AguaTracker.API
+```
+
+👤 Autor
+Desarrollado por Jensy Morales 
+* GitHub: @JensyMoralesYedom
+* LinkedIn: www.linkedin.com/in/jensy-enmanuel-morales-de-la-cruz-862259260
