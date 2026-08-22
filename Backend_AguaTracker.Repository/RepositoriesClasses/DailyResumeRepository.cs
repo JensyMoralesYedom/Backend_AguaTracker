@@ -4,14 +4,14 @@ using System.Text;
 using Backend_AguaTracker.Repository.Interfaces;
 using Backend_AguaTracker.Domain;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
+
 
 namespace Backend_AguaTracker.Repository.RepositoriesClasses
 {
-    public class DailyResumenRepository : IDailyResumenRepository
+    public class DailyResumeRepository : IDailyResumenRepository
     {
-        private readonly DbContext _context;
-        public DailyResumenRepository(DbContext context)
+        private readonly AguaTracker_DbContext _context;
+        public DailyResumeRepository(AguaTracker_DbContext context)
         {
             _context = context;
         }
@@ -42,28 +42,25 @@ namespace Backend_AguaTracker.Repository.RepositoriesClasses
 
         public async Task<Result<DailyResume>> GetDailyResumenByIdAsync(int id)
         {           
-            var dailyResumen = await _context.Set<DailyResume>().FindAsync(id);
+            var dailyResumen = await _context.Set<DailyResume>().FirstOrDefaultAsync(dr => dr.Id == id);
             return dailyResumen != null ? Result<DailyResume>.Success(dailyResumen) : Result<DailyResume>.Failure("No se encontró un resumen diario con el ID especificado.");
         }
 
         public async Task<Result<bool>> DeleteDailyResumenAsync(DailyResume dailyResumen)
         {
             _context.Set<DailyResume>().Remove(dailyResumen);
-            await _context.SaveChangesAsync();
             return Result<bool>.Success(true);
         }
 
         public async Task<Result<bool>> UpdateDailyResumenAsync(DailyResume dailyResumen)
         {
             _context.Set<DailyResume>().Update(dailyResumen);
-            await _context.SaveChangesAsync();
             return Result<bool>.Success(true);
         }
 
         public async Task<Result<bool>> AddDailyResumenAsync(DailyResume dailyResumen)
         {
             await _context.Set<DailyResume>().AddAsync(dailyResumen);
-            await _context.SaveChangesAsync();
             return Result<bool>.Success(true);
         }
     }

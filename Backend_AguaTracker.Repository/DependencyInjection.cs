@@ -22,7 +22,8 @@ namespace Backend_AguaTracker.Repository
 
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IWaterIntakeRepository, WaterIntakeRepository>();
-            services.AddScoped<IDailyResumenRepository, DailyResumenRepository>();
+            services.AddScoped<IDailyResumenRepository, DailyResumeRepository>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             return services;
         }

@@ -11,7 +11,7 @@ namespace Backend_AguaTracker.Domain
         public int Id { get; set; }
 
         [Required]
-        public int dailyResumenId { get; set; } = 0;
+        public int DailyResumenId { get; set; } = 0;
 
         [Required] 
         public double Amount { get; set; }

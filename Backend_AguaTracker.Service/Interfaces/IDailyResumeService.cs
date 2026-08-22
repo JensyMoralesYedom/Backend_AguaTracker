@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Backend_AguaTracker.Service.Interfaces
 {
-    internal interface IDailyResumeService
+    public interface IDailyResumeService
     {
         Task<Result<DailyResume>> GetDailyResumenByDateAsync(DateTime date);
         Task<Result<DailyResume>> GetDailyResumenByUserIdAndDateAsync(int userId, DateTime date);

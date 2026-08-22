@@ -6,7 +6,7 @@ using Backend_AguaTracker.Domain;
 
 namespace Backend_AguaTracker.Repository
 {
-    internal class AguaTracker_DbContext : DbContext
+    public class AguaTracker_DbContext : DbContext
     {
         public AguaTracker_DbContext(DbContextOptions<AguaTracker_DbContext> options) : base(options)
         {

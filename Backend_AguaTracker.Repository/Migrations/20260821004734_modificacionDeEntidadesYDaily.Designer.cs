@@ -4,6 +4,7 @@ using Backend_AguaTracker.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Backend_AguaTracker.Repository.Migrations
 {
     [DbContext(typeof(AguaTracker_DbContext))]
-    partial class AguaTracker_DbContextModelSnapshot : ModelSnapshot
+    [Migration("20260821004734_modificacionDeEntidadesYDaily")]
+    partial class modificacionDeEntidadesYDaily
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -97,12 +100,12 @@ namespace Backend_AguaTracker.Repository.Migrations
                     b.Property<double>("Amount")
                         .HasColumnType("double");
 
-                    b.Property<int>("DailyResumenId")
+                    b.Property<int>("dailyResumenId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DailyResumenId");
+                    b.HasIndex("dailyResumenId");
 
                     b.ToTable("WaterIntakes");
                 });
@@ -120,7 +123,7 @@ namespace Backend_AguaTracker.Repository.Migrations
                 {
                     b.HasOne("Backend_AguaTracker.Domain.DailyResume", "DailyResumen")
                         .WithMany()
-                        .HasForeignKey("DailyResumenId")
+                        .HasForeignKey("dailyResumenId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

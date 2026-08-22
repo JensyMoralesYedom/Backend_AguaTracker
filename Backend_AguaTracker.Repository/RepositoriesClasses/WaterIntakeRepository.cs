@@ -19,7 +19,6 @@ namespace Backend_AguaTracker.Repository.RepositoriesClasses
         public async Task<Result<bool>> AddWaterIntakeAsync(WaterIntake waterIntake)
         {
             _context.WaterIntakes.Add(waterIntake);
-            await _context.SaveChangesAsync();
             return Result<bool>.Success(true);
         }
 
@@ -46,14 +45,12 @@ namespace Backend_AguaTracker.Repository.RepositoriesClasses
         public async Task<Result<bool>> UpdateWaterIntakeAsync(WaterIntake waterIntake)
         {
             _context.WaterIntakes.Update(waterIntake);
-            await _context.SaveChangesAsync();
             return Result<bool>.Success(true);
         }
 
         public async Task<Result<bool>> DeleteWaterIntakeAsync(WaterIntake waterIntake)
         {
             _context.WaterIntakes.Remove(waterIntake);
-            await _context.SaveChangesAsync();
             return Result<bool>.Success(true);
         }
 

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Backend_AguaTracker.Service.Interfaces
 {
-    internal interface IUserService
+    public interface IUserService
     {
         Task<Result<User>> GetUserByIdAsync(int id);
         Task<Result<User>> GetUserByEmailAsync(string email);

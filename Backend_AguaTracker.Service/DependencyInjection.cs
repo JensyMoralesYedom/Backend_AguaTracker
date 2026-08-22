@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
+using Backend_AguaTracker.Service.Interfaces;
+using Backend_AguaTracker.Service.Services;
 
 namespace Backend_AguaTracker.Service
 {
@@ -10,8 +12,9 @@ namespace Backend_AguaTracker.Service
             // Register your service layer services here
             // For example, if you have a service class:
             // services.AddScoped<IYourService, YourServiceImplementation>();
-
-            
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IWaterIntakeService, WaterIntakeService>();
+            services.AddScoped<IDailyResumeService, DailyResumeService>();
 
             return services;
         }

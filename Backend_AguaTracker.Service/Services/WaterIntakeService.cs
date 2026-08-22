@@ -7,39 +7,53 @@ using Backend_AguaTracker.Service.Interfaces;
 
 namespace Backend_AguaTracker.Service.Services
 {
-    public class WatherIntakeService : IWatherIntakeService
+    public class WaterIntakeService : IWaterIntakeService
     {
-        private readonly IWaterIntakeRepository _waterIntakeRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public WatherIntakeService(IWaterIntakeRepository waterIntakeRepository)
+        public WaterIntakeService(IUnitOfWork unitOfWork)
         {
-            _waterIntakeRepository = waterIntakeRepository;
+            _unitOfWork = unitOfWork;
         }
 
-        public async Task<Result<WaterIntake>> AddWaterIntakeAsync(WaterIntake waterIntake)
+        public async Task<Result<WaterIntake>> AddWaterIntakeAsync(int userId, int amounthMl, DateTime date)
         {
-            if (waterIntake == null)
+            var result = await _unitOfWork.DailyResumes.
+                                        GetDailyResumenByUserIdAndDateAsync(userId, date);
+
+            if(!result.IsSuccess)
             {
-                return Result<WaterIntake>.Failure("Los datos de la ingesta de agua no pueden ser nulos.");
-            }
-            if (waterIntake.Amount <= 0)
-            {
-                return Result<WaterIntake>.Failure("La cantidad de agua debe ser mayor a cero.");
+                return Result<WaterIntake>.Failure($"No se encontró un resumen diario para el usuario con ID {userId} y fecha {date}");
             }
 
-            await _waterIntakeRepository.AddWaterIntakeAsync(waterIntake);
+            var dailyResume = result.Value;
+
+            var waterIntake = new WaterIntake
+            {
+                DailyResumenId = dailyResume.Id,
+                Amount = amounthMl,
+         
+            };
+
+            await _unitOfWork.WaterIntakes.AddWaterIntakeAsync(waterIntake);
+
+            dailyResume.TotalIntake += amounthMl;
+
+            await _unitOfWork.DailyResumes.UpdateDailyResumenAsync(dailyResume);
+
+            await _unitOfWork.CompleteAsync();
             return Result<WaterIntake>.Success(waterIntake);
         }
 
         public async Task<Result<List<WaterIntake>>> GetWaterIntakesByUserIdAsync(int userId)
         {
-            var result = await _waterIntakeRepository.GetWaterIntakesByUserIdAsync(userId);
+            var result = await _unitOfWork.WaterIntakes.GetWaterIntakesByUserIdAsync(userId);
             return result;
         }
 
         public async Task<Result<WaterIntake>> GetWaterIntakeByIdAsync(int id)
         {
-            var result = await _waterIntakeRepository.GetWaterIntakeByIdAsync(id);
+            var result = await _unitOfWork.WaterIntakes.GetWaterIntakeByIdAsync(id);
             if (result.Value == null)
             {
                 return Result<WaterIntake>.Failure($"Ingesta de agua con ID {id} no encontrada.");
@@ -49,7 +63,7 @@ namespace Backend_AguaTracker.Service.Services
 
         public async Task<Result<bool>> DeleteWaterIntakeAsync(int id)
         {
-            var result = await _waterIntakeRepository.GetWaterIntakeByIdAsync(id);
+            var result = await _unitOfWork.WaterIntakes.GetWaterIntakeByIdAsync(id);
             var waterIntake = result.Value;
 
             if (waterIntake == null)
@@ -57,7 +71,7 @@ namespace Backend_AguaTracker.Service.Services
                 return Result<bool>.Failure($"Ingesta de agua con ID {id} no encontrada.");
             }
 
-            return await _waterIntakeRepository.DeleteWaterIntakeAsync(waterIntake);
+            return await _unitOfWork.WaterIntakes.DeleteWaterIntakeAsync(waterIntake);
         }
 
         public async Task<Result<WaterIntake>> UpdateWaterIntakeAsync(WaterIntake waterIntake)
@@ -70,12 +84,12 @@ namespace Backend_AguaTracker.Service.Services
             {
                 return Result<WaterIntake>.Failure("La cantidad de agua debe ser mayor a cero.");
             }
-            var existingWaterIntake = await _waterIntakeRepository.GetWaterIntakeByIdAsync(waterIntake.Id);
+            var existingWaterIntake = await _unitOfWork.WaterIntakes.GetWaterIntakeByIdAsync(waterIntake.Id);
             if (existingWaterIntake == null)
             {
                 return Result<WaterIntake>.Failure($"Ingesta de agua con ID {waterIntake.Id} no encontrada.");
             }
-            await _waterIntakeRepository.UpdateWaterIntakeAsync(waterIntake);
+            await _unitOfWork.WaterIntakes.UpdateWaterIntakeAsync(waterIntake);
             return Result<WaterIntake>.Success(waterIntake);
         }
     }

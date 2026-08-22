@@ -30,21 +30,18 @@ namespace Backend_AguaTracker.Repository.RepositoriesClasses
         public async Task<Result<bool>> AddUserAsync(User user)
         {
             _context.Users.Add(user);
-            await _context.SaveChangesAsync();
             return Result<bool>.Success(true);
         }
 
         public async Task<Result<bool>> UpdateUserAsync(User user)
         {
             _context.Users.Update(user);
-            await _context.SaveChangesAsync();
             return Result<bool>.Success(true);
         }
 
         public async Task<Result<bool>> DeleteUserAsync(User user)
         {
             _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
             return Result<bool>.Success(true);
         }
 
