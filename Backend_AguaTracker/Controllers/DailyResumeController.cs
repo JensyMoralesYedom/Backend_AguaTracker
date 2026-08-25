@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Backend_AguaTracker.Domain;
 using Backend_AguaTracker.Service.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 namespace Backend_AguaTracker.Api.Controllers
 {
     [Route("api/[controller]")]
@@ -16,6 +17,7 @@ namespace Backend_AguaTracker.Api.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetAllDailyResumes()
         {
             var result = await _dailyResumeService.GetAllDailyResumenAsync();
@@ -27,6 +29,7 @@ namespace Backend_AguaTracker.Api.Controllers
         }
 
         [HttpGet("date/{date}")]
+        [Authorize]
         public async Task<IActionResult> GetDailyResumesByDate(DateTime date)
         {
             var result = await _dailyResumeService.GetDailyResumenByDateAsync(date);
@@ -38,6 +41,7 @@ namespace Backend_AguaTracker.Api.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<IActionResult> GetDailyResumeById(int id)
         {
             var result = await _dailyResumeService.GetDailyResumenByIdAsync(id);
@@ -49,6 +53,7 @@ namespace Backend_AguaTracker.Api.Controllers
         }
 
         [HttpGet("user/{userId}")]
+        [Authorize]
         public async Task<IActionResult> GetDailyResumesByUserId(int userId)
         {
             var result = await _dailyResumeService.GetDailyResumenByUserIdAsync(userId);
@@ -60,6 +65,7 @@ namespace Backend_AguaTracker.Api.Controllers
         }
 
         [HttpGet("user/{userId}/date/{date}")]
+        [Authorize]
         public async Task<IActionResult> GetDailyResumesByUserIdAndDate(int userId, DateTime date)
         {
             var result = await _dailyResumeService.GetDailyResumenByUserIdAndDateAsync(userId, date);
@@ -71,8 +77,12 @@ namespace Backend_AguaTracker.Api.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> CreateDailyResume([FromBody] DailyResume dailyResume)
         {
+            var userId = GetCurrentUserId();
+            dailyResume.UserId = userId;
+
             var result = await _dailyResumeService.AddDailyResumenAsync
                 (
                 dailyResume.UserId, 
@@ -89,11 +99,14 @@ namespace Backend_AguaTracker.Api.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> UpdateDailyResume(int id, [FromBody] DailyResume dailyResume)
         {
-            if (id != dailyResume.Id)
+            var userId = GetCurrentUserId();
+
+            if (dailyResume.UserId != userId)
             {
-                return BadRequest("ID mismatch");
+                return Forbid("You are not authorized to update this daily resume.");
             }
 
             var existingResumeResult = await _dailyResumeService.GetDailyResumenByIdAsync(id);
@@ -111,12 +124,21 @@ namespace Backend_AguaTracker.Api.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<IActionResult> DeleteDailyResume(int id)
         {
+            var userId = GetCurrentUserId();
+            
             var existingResumeResult = await _dailyResumeService.GetDailyResumenByIdAsync(id);
+            var dailyResume = existingResumeResult.Value;
             if (!existingResumeResult.IsSuccess)
             {
                 return NotFound(existingResumeResult.Error);
+            }
+
+            if (dailyResume.UserId != userId)
+            {
+                return Forbid("You are not authorized to delete this daily resume.");
             }
 
             var result = await _dailyResumeService.DeleteDailyResumenAsync(existingResumeResult.Value);
@@ -127,5 +149,11 @@ namespace Backend_AguaTracker.Api.Controllers
             return NoContent();
         }
 
+        private int GetCurrentUserId()
+        {
+            // ASP.NET Core ya validó el token, solo extraemos el valor del Claim "UserId"
+            var userIdClaim = HttpContext.User.FindFirst("UserId");
+            return userIdClaim != null ? int.Parse(userIdClaim.Value) : 0;
+        }
     }
 }

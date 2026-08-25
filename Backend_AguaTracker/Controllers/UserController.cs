@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Backend_AguaTracker.Domain;
 using Backend_AguaTracker.Service.Interfaces;
-using Backend_AguaTracker.Domain;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Backend_AguaTracker.Api.Controllers
 {
@@ -25,30 +27,32 @@ namespace Backend_AguaTracker.Api.Controllers
             return Ok(result.Value);
         }
 
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUserById(int id)
         {
+            
+            var userid = GetCurrentUserId();
+            if (userid != id)
+                return Forbid("You are not authorized to view this user.");
+
+            
             var result = await _userService.GetUserByIdAsync(id);
             if (!result.IsSuccess)
                 return BadRequest(result.Error);
             return Ok(result.Value);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> CreateUser([FromBody] User user)
-        {
-            if (user == null)
-                return BadRequest("User object is null.");
 
-            var result = await _userService.AddUserAsync(user);
-            if (!result.IsSuccess)
-                return BadRequest(result.Error);
-            return CreatedAtAction(nameof(GetUserById), new { id = result.Value.Id }, result.Value);
-        }
-
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUser(int id, [FromBody] User user)
         {
+           
+            var userid = GetCurrentUserId();
+            if (userid != id)
+                return Forbid("You are not authorized to update this user.");
+
             if (user == null)
                 return BadRequest("User object is null.");
 
@@ -69,6 +73,13 @@ namespace Backend_AguaTracker.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
+            
+
+            var userid = GetCurrentUserId();
+            if (userid != id)
+                return Forbid("You are not authorized to delete this user.");
+
+
             var existingUser = await _userService.GetUserByIdAsync(id);
             if (!existingUser.IsSuccess)
                 return NotFound("User not found.");
@@ -89,7 +100,12 @@ namespace Backend_AguaTracker.Api.Controllers
             return Ok(result.Value);
         }
 
-        
+        private int GetCurrentUserId()
+        {
+            // ASP.NET Core ya validó el token, solo extraemos el valor del Claim "UserId"
+            var userIdClaim = HttpContext.User.FindFirst("UserId");
+            return userIdClaim != null ? int.Parse(userIdClaim.Value) : 0;
+        }
 
     }
 }
