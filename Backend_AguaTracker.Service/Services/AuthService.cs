@@ -7,6 +7,7 @@ using Backend_AguaTracker.Repository.Interfaces;
 using Microsoft.Extensions.Configuration;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
+using System.Runtime.InteropServices;
 
 namespace Backend_AguaTracker.Service.Services
 {
@@ -96,11 +97,14 @@ namespace Backend_AguaTracker.Service.Services
                 return Result<string>.Failure("El email del usuario ya existe");
             }
             user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+            
             var result = await _unitOfWork.Users.AddUserAsync(user);
             if (!result.IsSuccess)
             {
                 return Result<string>.Failure(result.Error);
             }
+
+            await _unitOfWork.CompleteAsync();
 
             var token = await CreateToken(user);
 

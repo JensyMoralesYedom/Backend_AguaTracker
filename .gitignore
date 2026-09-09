@@ -15,6 +15,8 @@
 # --- Configuración local de usuarios / Secretos ---
 appsettings.Development.json
 appsettings.Local.json
+appsettings.Jwt.json
+appsettings.ConnectionStrings.json
 *.pem
 
 # --- Sistema operativo ---

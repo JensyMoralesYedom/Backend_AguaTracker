@@ -34,7 +34,7 @@ builder.Services.AddCors(options =>
     {
 
         // Aquí pones la URL exacta donde correrá tu frontend (Live Server, por ejemplo)
-        policy.WithOrigins("http://localhost:3000")
+        policy.WithOrigins("http://127.0.0.1:5500")
               .AllowAnyHeader()  // Permite enviar tokens JWT y JSON
               .AllowAnyMethod(); // Permite hacer GET, POST, PUT, DELETE
     });

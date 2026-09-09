@@ -15,6 +15,7 @@ namespace Backend_AguaTracker.Service
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IWaterIntakeService, WaterIntakeService>();
             services.AddScoped<IDailyResumeService, DailyResumeService>();
+            services.AddScoped<IAuthService, AuthService>();
 
             return services;
         }
