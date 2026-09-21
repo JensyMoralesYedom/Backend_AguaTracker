@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks.Dataflow;
 using Backend_AguaTracker.Domain;
 using Backend_AguaTracker.Repository.Interfaces;
 using Backend_AguaTracker.Service.Interfaces;
@@ -35,10 +36,15 @@ namespace Backend_AguaTracker.Service.Services
          
             };
 
-            await _unitOfWork.WaterIntakes.AddWaterIntakeAsync(waterIntake);
+            var resp = await _unitOfWork.WaterIntakes.AddWaterIntakeAsync(waterIntake);
+
+            if(!resp.IsSuccess)
+            {
+                return Result<WaterIntake>.Failure($"Error al agregar la ingesta de agua: {resp.Error}");
+            }
 
             dailyResume.TotalIntake += amounthMl;
-
+            
             await _unitOfWork.DailyResumes.UpdateDailyResumenAsync(dailyResume);
 
             await _unitOfWork.CompleteAsync();

@@ -17,6 +17,6 @@ namespace Backend_AguaTracker.Domain
         public double Amount { get; set; }
 
         // navigation property to the DailyResumen entity
-        public DailyResume DailyResumen { get; set; }
+        public DailyResume? DailyResumen { get; set; }
     }
 }

@@ -77,7 +77,29 @@ namespace Backend_AguaTracker.Service.Services
                 return Result<bool>.Failure("El registro a actualizar no puede ser nulo.");
             }
 
-            await _unitOfWork.DailyResumes.UpdateDailyResumenAsync(dailyResumen);
+            var user = await _unitOfWork.Users.GetUserByIdAsync(dailyResumen.UserId);
+            if (!user.IsSuccess || user.Value == null)
+            {
+                return Result<bool>.Failure("El usuario asociado al resumen diario no existe.");
+            }
+
+            // Cargar la instancia que YA está trackeada (evita el conflicto de tracking)
+            var existingResult = await _unitOfWork.DailyResumes.GetDailyResumenByIdAsync(dailyResumen.Id);
+            if (!existingResult.IsSuccess || existingResult.Value == null)
+            {
+                return Result<bool>.Failure("El resumen diario a actualizar no existe.");
+            }
+            var existing = existingResult.Value;
+
+            dailyResumen.IntakeGoal = CalculateIntakeGoal((int)user.Value.Weight, dailyResumen.ActivityLevel);
+
+            // Copiar los campos permitidos sobre la instancia trackeada
+            existing.TotalIntake = dailyResumen.TotalIntake;
+            existing.ActivityLevel = dailyResumen.ActivityLevel;
+            existing.IntakeGoal = dailyResumen.IntakeGoal;
+            // NO se copian: Id, UserId, Date (no deben poder cambiarse desde el body)
+
+            await _unitOfWork.CompleteAsync();            // solo guarda cambios, sin adjuntar nada
             return Result<bool>.Success(true);
         }
 
@@ -86,9 +108,16 @@ namespace Backend_AguaTracker.Service.Services
             var result = await _unitOfWork.Users.GetUserByIdAsync(userId);
             var user = result.IsSuccess ? result.Value : null;
 
+            
             if (user == null)
             {
                 return Result<DailyResume>.Failure("El usuario no existe.");
+            }
+
+            var existingdate = await GetDailyResumenByDateAsync(date);
+            if (existingdate.IsSuccess)
+            {
+                return Result<DailyResume>.Failure("Ya existe un resumen de este dia"); 
             }
 
             // Lógica de fallback aplicada correctamente

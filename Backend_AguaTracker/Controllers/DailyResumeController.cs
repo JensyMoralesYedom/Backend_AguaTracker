@@ -73,7 +73,7 @@ namespace Backend_AguaTracker.Api.Controllers
             {
                 return Ok(result.Value);
             }
-            return BadRequest(result.Error);
+            return NotFound(result.Error);
         }
 
         [HttpPost]
@@ -115,6 +115,8 @@ namespace Backend_AguaTracker.Api.Controllers
                 return NotFound(existingResumeResult.Error);
             }
 
+
+
             var result = await _dailyResumeService.UpdateDailyResumenAsync(dailyResume);
             if (!result.IsSuccess)
             {
@@ -136,7 +138,7 @@ namespace Backend_AguaTracker.Api.Controllers
                 return NotFound(existingResumeResult.Error);
             }
 
-            if (dailyResume.UserId != userId)
+            if (existingResumeResult.Value.UserId != userId)
             {
                 return Forbid("You are not authorized to delete this daily resume.");
             }

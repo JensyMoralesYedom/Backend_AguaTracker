@@ -38,7 +38,6 @@ namespace Backend_AguaTracker.Service.Services
             {
                 new Claim(JwtRegisteredClaimNames.Sub, jwt.Subject),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(JwtRegisteredClaimNames.Iat, DateTime.UtcNow.ToString()),
                 new Claim("UserId", user.Id.ToString()),
                 new Claim("Email", user.Email)
 
