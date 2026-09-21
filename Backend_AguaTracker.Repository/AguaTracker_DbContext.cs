@@ -20,5 +20,6 @@ namespace Backend_AguaTracker.Repository
 
         public DbSet<User> Users { get; set; }
         public DbSet<WaterIntake> WaterIntakes { get; set; }
+        public DbSet<DailyResume> DailyResumes { get; set; }
     }
 }
